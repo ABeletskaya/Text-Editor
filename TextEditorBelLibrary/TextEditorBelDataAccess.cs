@@ -9,6 +9,7 @@ namespace TextEditorBelLibrary
 {
     public class TextEditorBelDataAccess
     {
+
         public static List<string> LoadFilesName()
         {
             using (IDbConnection connection = new SQLiteConnection(LoadConnectionString()))
@@ -44,7 +45,7 @@ namespace TextEditorBelLibrary
             }
         }
 
-        private static string LoadConnectionString(string nameConn = "Test")
+        private static string LoadConnectionString(string nameConn = "Default")
         {
             return ConfigurationManager.ConnectionStrings[nameConn].ConnectionString;
         }
