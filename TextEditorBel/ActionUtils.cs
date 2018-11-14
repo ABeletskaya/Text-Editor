@@ -27,7 +27,7 @@ namespace TextEditorBel
             return false;
         }
 
-        public static void SaveCurrentFile(string name, string data)
+        public static void SaveCurrentFile(string name, byte[] data)
         {
             var res = MessageBox.Show("Do you want to save changes into current file? "
                           , "Save changes", MessageBoxButtons.YesNo
@@ -36,20 +36,25 @@ namespace TextEditorBel
             {
                 if (String.IsNullOrEmpty(name))
                 {
-                    SaveFile(false, data);
+                    SaveAsFile(false, data);
                 }
 
                 else
                 {
-                    file.Name = name;
-                    file.Data = data;
-                    TextEditorBelDataAccess.SaveExistFile(file);
+                    SaveFile(name, data);
                     MessageBox.Show("File has been saved");
                 }
             }
         }
 
-        public static void SaveFile(bool isExist, string data)
+        public static void SaveFile(string name, byte[] data)
+        {
+            file.Name = name;
+            file.Data = data;
+            TextEditorBelDataAccess.SaveExistFile(file);
+        }
+
+        public static void SaveAsFile(bool isExist, byte[] data)
         {
             EnterNameForm nameDialog = (isExist) ? new EnterNameForm(fileName) : new EnterNameForm();
             nameDialog.ShowDialog();
@@ -85,6 +90,6 @@ namespace TextEditorBel
             {
                 MessageBox.Show(ex.ToString());
             }
-        }
+        }        
     }
 }
