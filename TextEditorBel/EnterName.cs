@@ -23,11 +23,11 @@ namespace TextEditorBel
             fileName = "";
         }
 
-        private void OKbtn_Click(object sender, EventArgs e)
+        private async void OKbtn_ClickAsync(object sender, EventArgs e)
         {
             fileName = nameTB.Text;
            
-            var collection = TextEditorBelDataAccess.LoadFilesName();
+            var collection = await TextEditorBelDataAccess.LoadFilesNameAsync();
             if (!collection.Contains(fileName))
             {
                 isPassName = true;               

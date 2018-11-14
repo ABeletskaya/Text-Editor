@@ -58,7 +58,7 @@
             this.OKbtn.TabIndex = 2;
             this.OKbtn.Text = "OK";
             this.OKbtn.UseVisualStyleBackColor = true;
-            this.OKbtn.Click += new System.EventHandler(this.OKbtn_Click);
+            this.OKbtn.Click += new System.EventHandler(this.OKbtn_ClickAsync);
             // 
             // canselBtn
             // 

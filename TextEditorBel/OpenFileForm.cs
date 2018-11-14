@@ -12,14 +12,14 @@ namespace TextEditorBel
         public OpenFileForm()
         {
             InitializeComponent();
-            InitialFilesNameList();
+            InitialFilesNameListAsync();
             isPassName = false;
             fileName = "";
         }
 
-        private void InitialFilesNameList()
+        private async void InitialFilesNameListAsync()
         {
-            var collection = TextEditorBelDataAccess.LoadFilesName();
+            var collection = await TextEditorBelDataAccess.LoadFilesNameAsync();
             foreach (var item in collection)
             {
                 filesLB.Items.Add(item);
@@ -44,8 +44,12 @@ namespace TextEditorBel
         private void Open()
         {
             fileName = filesLB.Text;
-            isPassName = true;
-            this.Close();
+            isPassName = false;
+            if (fileName.Length > 2)
+            {
+                isPassName = true;
+                this.Close();
+            }           
         }
     }
 }

@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="System.Configuration">
-      <HintPath>..\..\..\System.Configuration.dll</HintPath>
+      <HintPath>..\..\..\..\System.Configuration.dll</HintPath>
     </Reference>
   </ItemGroup>
 

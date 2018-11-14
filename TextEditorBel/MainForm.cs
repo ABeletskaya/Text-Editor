@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.IO.Compression;
 using System.Text;
 using System.Windows.Forms;
 
@@ -18,52 +16,52 @@ namespace TextEditorBel
             this.Text = AppText;
         }
 
-        private void SaveModifiedData() 
+        private async void SaveModifiedDataAsync() 
         {
             if (inputRTB.Modified)
             {
                 var data = Encoding.Unicode.GetBytes(inputRTB.Rtf);
-                var compressData = CompressData(data);
-                ActionUtils.SaveCurrentFile(fileName, compressData);
+                var compressData =  Archive.CompressData(data);
+                await ActionUtils.SaveCurrentFileAsync(fileName, compressData);
                 inputRTB.Modified = false;
             }
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveModifiedData();
+            SaveModifiedDataAsync();
 
             inputRTB.Clear();
             fileName = "";
             this.Text = AppText;
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void openToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
-            SaveModifiedData();
+            SaveModifiedDataAsync();
 
-            if (!ActionUtils.OpenFile())
+            if (! await ActionUtils.OpenFileAsync())
             {
                 return;
             }
 
-            fileName = ActionUtils.file.Name;  
-            
-            OutPutDecompressData(ActionUtils.file.Data);
-            
+            fileName = ActionUtils.file.Name;
+
+            inputRTB.Rtf = Archive.OutPutDecompressData(ActionUtils.file.Data);
+
             this.Text = fileName + " - " + AppText;
         }
                
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
             if (inputRTB.Modified)
             {
                 var data = Encoding.Unicode.GetBytes(inputRTB.Rtf);
-                var compressData = CompressData(data);
+                var compressData =  Archive.CompressData(data);
 
                 if (String.IsNullOrEmpty(fileName))
                 {                   
-                    ActionUtils.SaveAsFile(false, compressData);
+                    await ActionUtils.SaveAsFileAsync(false, compressData);
                     if (!String.IsNullOrEmpty(ActionUtils.fileName))
                     {
                         fileName = ActionUtils.fileName;
@@ -73,24 +71,24 @@ namespace TextEditorBel
                     return;
                 }
 
-                ActionUtils.SaveFile(fileName, compressData);
+                await ActionUtils.SaveFileAsync(fileName, compressData);
 
                 inputRTB.Modified = false;
             }
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void saveAsToolStripMenuItem_ClickAsync(object sender, EventArgs e)
         {
             var data = Encoding.Unicode.GetBytes(inputRTB.Rtf);
-            var compressData = CompressData(data);
+            var compressData =  Archive.CompressData(data);
             if (String.IsNullOrEmpty(fileName))
             {
-                ActionUtils.SaveAsFile(false, compressData);
+                await ActionUtils.SaveAsFileAsync(false, compressData);
             }
 
             else
             {
-                ActionUtils.SaveAsFile(true, compressData);
+                await ActionUtils.SaveAsFileAsync(true, compressData);
             }
 
             if (!String.IsNullOrEmpty(ActionUtils.fileName))
@@ -142,7 +140,7 @@ namespace TextEditorBel
 
             if (e.CloseReason == CloseReason.WindowsShutDown) return;
 
-            SaveModifiedData();
+            SaveModifiedDataAsync();
         }
 
         private void fontToolStripMenuItem_Click(object sender, EventArgs e)
@@ -154,50 +152,6 @@ namespace TextEditorBel
             {
                 inputRTB.SelectionFont = fontDialog.Font;
             }
-        }
-
-        /// <summary>
-        /// Методы для сжатия и восстановления данных
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        private static byte[] CompressData(byte[] data)
-        {
-            byte[] compressData = null;
-            //поток для чтения исходных данных
-            using (MemoryStream sourceStream = new MemoryStream(data))
-            {
-                // поток для записи сжатых данных
-                using (MemoryStream targetStream = new MemoryStream())
-                {
-                    // поток архивации
-                    using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
-                    {
-                        sourceStream.CopyTo(compressionStream); // копируем байты из одного потока в другой                                                                
-                    }
-                    compressData = targetStream.ToArray();
-                    object r = targetStream.ToArray();
-                }
-            }
-            return compressData;
-        }
-
-        private void OutPutDecompressData(byte[] compressData)
-        {
-            using (MemoryStream sourceStream = new MemoryStream(compressData))
-            {
-                using (MemoryStream targetStream = new MemoryStream())
-                {
-                    using (GZipStream decompressionStream = new GZipStream(sourceStream, CompressionMode.Decompress))
-                    {
-                        decompressionStream.CopyTo(targetStream);
-                    }
-                    var text = Encoding.Unicode.GetString(targetStream.ToArray());
-                    inputRTB.Rtf = text;
-                }
-            }
-        }
-
-       
+        }               
     }
 }

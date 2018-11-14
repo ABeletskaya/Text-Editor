@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TextEditorBelLibrary;
 
@@ -9,7 +10,7 @@ namespace TextEditorBel
         public static string fileName { get; private set; }
         public static FileModel file { get; private set; }
 
-        public static bool OpenFile()
+        public static async Task<bool> OpenFileAsync()
         {
             fileName = "";          
             OpenFileForm openDialog = new OpenFileForm();
@@ -18,7 +19,7 @@ namespace TextEditorBel
             if (openDialog.isPassName)
             {
                 fileName = openDialog.fileName;
-                file =  TextEditorBelDataAccess.LoadFile(fileName);
+                file = await TextEditorBelDataAccess.LoadFileAsync(fileName);
                 return true;
             }
 
@@ -27,7 +28,7 @@ namespace TextEditorBel
             return false;
         }
 
-        public static void SaveCurrentFile(string name, byte[] data)
+        public static async Task SaveCurrentFileAsync(string name, byte[] data)
         {
             var res = MessageBox.Show("Do you want to save changes into current file? "
                           , "Save changes", MessageBoxButtons.YesNo
@@ -36,25 +37,25 @@ namespace TextEditorBel
             {
                 if (String.IsNullOrEmpty(name))
                 {
-                    SaveAsFile(false, data);
+                    await SaveAsFileAsync(false, data);
                 }
 
                 else
                 {
-                    SaveFile(name, data);
+                    await SaveFileAsync(name, data);
                     MessageBox.Show("File has been saved");
                 }
             }
         }
 
-        public static void SaveFile(string name, byte[] data)
+        public static async Task SaveFileAsync(string name, byte[] data)
         {
             file.Name = name;
             file.Data = data;
-            TextEditorBelDataAccess.SaveExistFile(file);
+            await TextEditorBelDataAccess.SaveExistFileAsync(file);
         }
 
-        public static void SaveAsFile(bool isExist, byte[] data)
+        public static async Task SaveAsFileAsync(bool isExist, byte[] data)
         {
             EnterNameForm nameDialog = (isExist) ? new EnterNameForm(fileName) : new EnterNameForm();
             nameDialog.ShowDialog();
@@ -78,11 +79,11 @@ namespace TextEditorBel
             {
                 if (isExist)
                 {
-                    TextEditorBelDataAccess.SaveExistFile(file);
+                    await TextEditorBelDataAccess.SaveExistFileAsync(file);
                 }
                 else
                 {
-                    TextEditorBelDataAccess.CreateNewFile(file);
+                    await TextEditorBelDataAccess.CreateNewFileAsync(file);
                 }
             }
 

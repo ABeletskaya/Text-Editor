@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionUtils.cs" />
+    <Compile Include="Archive.cs" />
     <Compile Include="EnterName.cs">
       <SubType>Form</SubType>
     </Compile>
